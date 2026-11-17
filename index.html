@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Nghe Tiếng Anh: Lost Luggage & Unclaimed Baggage</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 20px;
+        }
+        .audio-wave span {
+            display: block;
+            width: 3px;
+            height: 100%;
+            background-color: #3b82f6;
+            border-radius: 2px;
+            animation: wave 1s infinite ease-in-out;
+        }
+        .audio-wave.paused span {
+            animation-play-state: paused;
+            height: 4px;
+        }
+        .audio-wave span:nth-child(2) { animation-delay: 0.1s; }
+        .audio-wave span:nth-child(3) { animation-delay: 0.2s; }
+        .audio-wave span:nth-child(4) { animation-delay: 0.3s; }
+        .audio-wave span:nth-child(5) { animation-delay: 0.4s; }
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 20px; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2.5 rounded-xl">
+                    <i class="fa-solid fa-headphones-simple text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Travel Tips: Lost Luggage</h1>
+                    <p class="text-xs text-blue-200">Luyện nghe chủ động • Không Transcript • Giải thích chi tiết</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg text-sm">
+                <i class="fa-solid fa-circle-info text-blue-300"></i>
+                <span>Sử dụng loa/tai nghe để làm bài</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+
+        <!-- Custom Notification Banner -->
+        <div id="toast-box" class="hidden fixed bottom-5 right-5 z-50 max-w-sm bg-slate-800 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-all duration-300">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <p id="toast-msg" class="text-sm font-medium"></p>
+        </div>
+
+        <!-- Audio Player Section (2 Parts) -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Audio Part 1 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Audio Part 1</span>
+                        <div id="wave-1" class="audio-wave paused">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">Handling & Preventing Lost Baggage</h2>
+                    <p class="text-xs text-slate-500 mt-1">Tina Traveler chia sẻ cách xử lý và phòng tránh thất lạc hành lý tại sân bay.</p>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleAudio(1)" id="btn-play-1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 transition shadow-sm">
+                            <i class="fa-solid fa-play"></i> <span>Nghe Part 1</span>
+                        </button>
+                        <button onclick="stopAudio(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2 rounded-xl text-sm transition" title="Dừng hẳn">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-slate-600">
+                        <label for="rate-1"><i class="fa-solid fa-gauge-high"></i> Tốc độ:</label>
+                        <select id="rate-1" onchange="changeRate(1)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:border-blue-500">
+                            <option value="0.8">0.8x (Chậm)</option>
+                            <option value="0.95" selected>1.0x (Chuẩn)</option>
+                            <option value="1.15">1.15x (Nhanh)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Part 2 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Audio Part 2</span>
+                        <div id="wave-2" class="audio-wave paused">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">The Unclaimed Baggage Center</h2>
+                    <p class="text-xs text-slate-500 mt-1">Khám phá cửa hàng độc đáo chuyên mua bán hành lý bị bỏ quên ở Alabama, Mỹ.</p>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleAudio(2)" id="btn-play-2" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 transition shadow-sm">
+                            <i class="fa-solid fa-play"></i> <span>Nghe Part 2</span>
+                        </button>
+                        <button onclick="stopAudio(2)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2 rounded-xl text-sm transition" title="Dừng hẳn">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-slate-600">
+                        <label for="rate-2"><i class="fa-solid fa-gauge-high"></i> Tốc độ:</label>
+                        <select id="rate-2" onchange="changeRate(2)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:border-indigo-500">
+                            <option value="0.8">0.8x (Chậm)</option>
+                            <option value="0.95" selected>1.0x (Chuẩn)</option>
+                            <option value="1.15">1.15x (Nhanh)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+            <button onclick="switchTab('vocab')" id="tab-vocab" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow-sm">
+                <i class="fa-solid fa-book-open"></i> <span>Từ vựng trọng tâm</span>
+            </button>
+            <button onclick="switchTab('fill')" id="tab-fill" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-pen-to-square"></i> <span>Bài 1: Điền từ</span>
+            </button>
+            <button onclick="switchTab('mcq')" id="tab-mcq" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-list-check"></i> <span>Bài 2: Trắc nghiệm</span>
+            </button>
+            <button onclick="switchTab('match')" id="tab-match" class="tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-link"></i> <span>Bài 3: Nối từ & Nghĩa</span>
+            </button>
+        </nav>
+
+        <!-- TAB 1: VOCABULARY -->
+        <section id="section-vocab" class="space-y-6">
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+                <i class="fa-solid fa-lightbulb text-amber-500 text-xl mt-0.5"></i>
+                <div class="text-sm text-amber-900">
+                    <p class="font-semibold">Mẹo học hiệu quả:</p>
+                    <p>Hãy lướt qua danh sách từ vựng và bấm vào biểu tượng loa nhỏ bên cạnh từng từ để làm quen với phát âm trước khi bắt đầu nghe bài hội thoại.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Vocab Part 1 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-blue-700 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-plane-departure"></i> Từ vựng Part 1
+                    </h3>
+                    <div id="vocab-list-1" class="space-y-3"></div>
+                </div>
+
+                <!-- Vocab Part 2 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-indigo-700 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-store"></i> Từ vựng Part 2
+                    </h3>
+                    <div id="vocab-list-2" class="space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: FILL IN THE BLANKS -->
+        <section id="section-fill" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4 mb-5">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Bài tập 1: Điền từ còn thiếu vào chỗ trống</h3>
+                        <p class="text-sm text-slate-500">Nghe kỹ thông tin từ cả Part 1 và Part 2 để điền đúng 1 từ/số thích hợp. Bấm <b>"Gợi ý"</b> nếu cần trợ giúp.</p>
+                    </div>
+                    <div id="fill-score-badge" class="hidden bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl text-sm"></div>
+                </div>
+
+                <!-- Word Bank Hint Box -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"><i class="fa-solid fa-box-open mr-1"></i> Ngân hàng từ gợi ý (Xáo trộn):</p>
+                    <div id="word-bank" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div id="fill-questions-container" class="space-y-5"></div>
+
+                <div class="mt-6 pt-5 border-t border-slate-100 flex flex-wrap gap-3">
+                    <button onclick="checkFillAnswers()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Kiểm tra đáp án
+                    </button>
+                    <button onclick="resetFill()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-xl transition">
+                        Làm lại
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: MULTIPLE CHOICE -->
+        <section id="section-mcq" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4 mb-5">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Bài tập 2: Trắc nghiệm (3 lựa chọn)</h3>
+                        <p class="text-sm text-slate-500">Chọn phương án đúng nhất (A, B hoặc C) dựa trên nội dung bài nghe Part 1 & Part 2.</p>
+                    </div>
+                    <div id="mcq-score-badge" class="hidden bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl text-sm"></div>
+                </div>
+
+                <div id="mcq-questions-container" class="space-y-6"></div>
+
+                <div class="mt-6 pt-5 border-t border-slate-100 flex flex-wrap gap-3">
+                    <button onclick="checkMcqAnswers()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Nộp bài & Xem giải thích
+                    </button>
+                    <button onclick="resetMcq()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-xl transition">
+                        Làm lại
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: MATCHING -->
+        <section id="section-match" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4 mb-5">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Bài tập 3: Nối thuật ngữ / Cụm từ với định nghĩa</h3>
+                        <p class="text-sm text-slate-500">Chọn định nghĩa tương ứng ở cột bên phải cho mỗi cụm từ xuất hiện trong bài nghe.</p>
+                    </div>
+                    <div id="match-score-badge" class="hidden bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl text-sm"></div>
+                </div>
+
+                <div id="match-questions-container" class="space-y-4"></div>
+
+                <div class="mt-6 pt-5 border-t border-slate-100 flex flex-wrap gap-3">
+                    <button onclick="checkMatchAnswers()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Kiểm tra kết quả
+                    </button>
+                    <button onclick="resetMatch()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-xl transition">
+                        Làm lại
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-500">
+        <p>Ứng dụng luyện nghe tiếng Anh tương tác • Nội dung từ chuỗi bài nghe Travel Tips (Tina Traveler)</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. DỮ LIỆU AUDIO (CHỈ DÙNG CHO TTS, KHÔNG RENDER RA UI)
+        // ==========================================
+        const audioScripts = {
+            1: `This is Tina Traveler, your travel advisor with your travel tips of the day. Listen every day, and learn something new and interesting every time. So, nothing can ruin a vacation or business trip faster than not having the clothing and other belongings you shopped for and packed thoughtfully in anticipation of your trip. As we all know, baggage can be delayed, stolen, and damaged as you make your way from home to your destination. But today, we’ll be talking about the worst: baggage that is simply lost, most often by an airline.
+            Here’s the scenario: You’ve arrived at your final destination and waited patiently for what seems like forever at the baggage carousel as other bags roll by, picked up one-by-one by other travelers. The bags slow to a trickle until finally the carousel stops. Your bags are nowhere in sight. If you had to change planes, you wonder whether the bags were transferred to your connecting flight or whether they simply were sent to the wrong destination. You take your luggage checks to the airline’s missing luggage counter and file a claim. You’re optimistic. The majority of bags that don’t arrive with you will usually arrive on the next flight and will be delivered to your local address within a few hours, or, if they were sent to the wrong airport, within a day or two. If you’re lucky, you aren’t planning to fly on to another destination, because in that case getting your bags to you can get quite complicated.
+            Many airlines will reimburse you for any unexpected expenses caused by the delay, such as the need to replace underwear or cosmetics and other toiletries. Ask your airline to do this and keep your receipts. And if the worst happens, and your bags are permanently lost or completely destroyed, be sure to file a claim for damages, meaning the cost you will incur to replace what you have lost. The maximum amount you can receive differs from country to country and airline to airline, but one thing is certain: you won’t receive anything if you are unable to document what you lost. You may need to produce sales receipts to prove the value of the items you had in your suitcase. If you have them, include them with your claim. Don’t expect to receive the full amount you originally paid for your things. The airline will pay you for the depreciated value of your items if they aren’t new.
+            Here are some tips to prevent the loss of your airline baggage: Put your name on the outside and inside of every bag. Put a copy of your itinerary inside the bag, especially if you’re traveling to more than one destination. That way the airline can locate you. Avoid checking in to your flight late and avoid tight connections where your bag has to be transferred. These two situations are the cause of most lost or delayed bags. Don’t put expensive valuables in checked bags: computers, cameras, wallets, and jewelry should go with you in your carry-on baggage. Airlines almost never reimburse you if those items are lost. Keep an itemized list of what you have in your bag for the unlikely event that you’ll have to tell the airline what you’ve lost. And finally, be sure to look at the destination label the airline puts on your bag to be sure it’s the destination you’re traveling to. Mistakes happen and when they do, your bag will go where the label sends it. And be sure to hold on to the luggage checks you are given when you check in. In tomorrow’s show, I’ll tell you where bags lost in the United States often end up.`,
+            2: `Tina Traveler here again with today’s travel tip of the day—still on the subject of lost luggage, but from a very different angle. Yesterday we discussed how to avoid having the airlines lose your luggage. But let’s say that happens. And let’s say you’ve agreed to be reimbursed for your loss and you have moved on. But here’s an interesting twist: today, we’re at the Unclaimed Baggage Center, a one-of-a-kind store in the U.S., and a major tourist attraction here in the state of Alabama in the U.S. South. Over a million people visit it each year from the U.S. and over 40 other countries. The Unclaimed Baggage Center’s motto is “You never know what you’ll find!” This unusual business buys bags left behind by passengers—from airlines, bus companies, and railways. I know what you’re thinking, but yes, some people just don’t pick up their bags. They buy them sight unseen, and one company executive says, “We have no idea what’s in the bags when we purchase them.” The company says it sorts the contents of the luggage and only puts the best merchandise out for sale. All clothes are dry-cleaned and laundered. Fine jewelry is cleaned and priced. All electronic equipment is tested and cleared of data. What they can’t sell they donate or recycle.
+            The Unclaimed Baggage Center feels more like a department store than the typical lost and found department you can find at any train or bus station. Here you can find top brands with some items that still have their original store price tags attached to them. Many high-end electronic products are, in spite of all advice, packed in checked luggage. In a recent year the Unclaimed Baggage Center sold over 3,000 iPads, as well as thousands of smartphones, headphones, cameras, laptops, and their accessories. It is said that the Center puts out more than 5,000 items a day and the price is right. Many are discounted as much as 80% below their original selling prices.
+            You might ask why these items hadn’t been returned to their original owners. The owner of the Unclaimed Baggage Center says that it has contracts with airlines and other companies who have already settled and paid claims to customers. Sometimes, however, the items couldn’t be returned because they had no identification on them.
+            Before you get mad, however, it’s important to note that airlines say that only half of 1% of checked bags are lost, and of those, 98% are eventually returned to their owners.`
+        };
+
+        // ==========================================
+        // 2. DỮ LIỆU TỪ VỰNG
+        // ==========================================
+        const vocabData = {
+            1: [
+                { word: "baggage carousel", pos: "(n)", ipa: "/ˈbæɡɪdʒ ˌkærəˈsel/", mean: "băng chuyền hành lý tại sân bay" },
+                { word: "luggage check", pos: "(n)", ipa: "/ˈlʌɡɪdʒ tʃek/", mean: "cuống vé / thẻ nhận hành lý ký gửi" },
+                { word: "file a claim", pos: "(v.phr)", ipa: "/faɪl ə kleɪm/", mean: "nộp đơn yêu cầu bồi thường / khiếu nại" },
+                { word: "reimburse", pos: "(v)", ipa: "/ˌriːɪmˈbɜːrs/", mean: "hoàn trả, bồi hoàn chi phí" },
+                { word: "toiletries", pos: "(n)", ipa: "/ˈtɔɪlətriz/", mean: "đồ dùng vệ sinh cá nhân (kem đánh răng, sữa tắm...)" },
+                { word: "depreciated value", pos: "(n.phr)", ipa: "/dɪˈpriːʃieɪtɪd ˈvæljuː/", mean: "giá trị đã khấu hao (giá trị còn lại của đồ cũ)" },
+                { word: "itinerary", pos: "(n)", ipa: "/aɪˈtɪnəreri/", mean: "lịch trình chuyến đi" },
+                { word: "tight connection", pos: "(n.phr)", ipa: "/taɪt kəˈnekʃn/", mean: "chuyến bay nối chuyến có thời gian quá cảnh ngắn" },
+                { word: "itemized list", pos: "(n.phr)", ipa: "/ˈaɪtəmaɪzd lɪst/", mean: "danh sách liệt kê chi tiết từng món đồ" }
+            ],
+            2: [
+                { word: "unclaimed", pos: "(adj)", ipa: "/ˌʌnˈkleɪmd/", mean: "không có người nhận" },
+                { word: "one-of-a-kind", pos: "(adj)", ipa: "/ˌwʌn əv ə ˈkaɪnd/", mean: "độc nhất vô nhị, có một không hai" },
+                { word: "motto", pos: "(n)", ipa: "/ˈmɑːtoʊ/", mean: "phương châm, khẩu hiệu" },
+                { word: "sight unseen", pos: "(adv.phr)", ipa: "/saɪt ʌnˈsiːn/", mean: "mua mà không cần xem trước bên trong" },
+                { word: "merchandise", pos: "(n)", ipa: "/ˈmɜːrtʃəndaɪs/", mean: "hàng hóa" },
+                { word: "laundered", pos: "(adj/v)", ipa: "/ˈlɔːndərd/", mean: "được giặt là sạch sẽ" },
+                { word: "high-end", pos: "(adj)", ipa: "/ˌhaɪ ˈend/", mean: "cao cấp, đắt tiền" },
+                { word: "settle a claim", pos: "(v.phr)", ipa: "/ˈsetl ə kleɪm/", mean: "giải quyết và chi trả bồi thường" }
+            ]
+        };
+
+        // ==========================================
+        // 3. DỮ LIỆU BÀI TẬP 1: ĐIỀN TỪ (FILL IN THE BLANKS)
+        // ==========================================
+        const fillQuestions = [
+            {
+                id: "f1", part: "Part 1",
+                before: "If your bags don't arrive with you, take your luggage checks to the missing luggage counter and file a ",
+                after: ".",
+                answer: "claim",
+                hint: "Danh từ (5 chữ cái): Đơn yêu cầu bồi thường / khiếu nại.",
+                explain: "Trong Part 1, Tina nói: 'You take your luggage checks to the airline’s missing luggage counter and file a claim' (Bạn mang thẻ hành lý đến quầy hành lý thất lạc và nộp đơn khiếu nại)."
+            },
+            {
+                id: "f2", part: "Part 1",
+                before: "Airlines will not pay the full original price for used items; instead, they pay for the ",
+                after: " value.",
+                answer: "depreciated",
+                hint: "Tính từ (11 chữ cái): Đã bị khấu hao, giảm giá trị theo thời gian sử dụng.",
+                explain: "Part 1 nêu rõ: 'The airline will pay you for the depreciated value of your items if they aren’t new' (Hãng hàng không sẽ trả giá trị đã khấu hao nếu đồ của bạn không còn mới)."
+            },
+            {
+                id: "f3", part: "Part 1",
+                before: "To help the airline locate you if you visit multiple places, put a copy of your ",
+                after: " inside every bag.",
+                answer: "itinerary",
+                hint: "Danh từ (9 chữ cái): Lịch trình chuyến đi.",
+                explain: "Part 1 khuyên: 'Put a copy of your itinerary inside the bag, especially if you’re traveling to more than one destination' (Đặt một bản sao lịch trình bên trong túi)."
+            },
+            {
+                id: "f4", part: "Part 1",
+                before: "Expensive valuables such as computers, cameras, and jewelry should always be packed in your ",
+                after: " baggage.",
+                answer: "carry-on",
+                hint: "Tính từ ghép (8 chữ cái, có dấu gạch ngang): Hành lý xách tay.",
+                explain: "Part 1 nhắc nhở: 'computers, cameras, wallets, and jewelry should go with you in your carry-on baggage' (nên mang theo trong hành lý xách tay)."
+            },
+            {
+                id: "f5", part: "Part 2",
+                before: "The Unclaimed Baggage Center buys lost bags from airlines, bus companies, and railways ",
+                after: " unseen.",
+                answer: "sight",
+                hint: "Danh từ (5 chữ cái): Cụm từ '_____ unseen' nghĩa là mua mà không xem trước bên trong.",
+                explain: "Trong Part 2: 'They buy them sight unseen' (Họ mua chúng mà không hề biết hay xem trước bên trong có gì)."
+            },
+            {
+                id: "f6", part: "Part 2",
+                before: "Before putting items out for sale, all electronic equipment is tested and cleared of ",
+                after: ".",
+                answer: "data",
+                hint: "Danh từ (4 chữ cái): Dữ liệu cá nhân trên thiết bị điện tử.",
+                explain: "Part 2 giải thích quy trình xử lý đồ điện tử: 'All electronic equipment is tested and cleared of data' (Tất cả thiết bị điện tử đều được kiểm tra và xóa sạch dữ liệu)."
+            },
+            {
+                id: "f7", part: "Part 2",
+                before: "Many items at the Center are discounted as much as ",
+                after: "% below their original selling prices.",
+                answer: "80",
+                hint: "Con số (2 chữ số): Mức giảm giá tối đa so với giá gốc.",
+                explain: "Part 2 đề cập: 'Many are discounted as much as 80% below their original selling prices' (Nhiều món được giảm tới 80% so với giá bán ban đầu)."
+            },
+            {
+                id: "f8", part: "Part 2",
+                before: "According to airlines, only half of 1% of checked bags are lost, and ",
+                after: "% of those are eventually returned.",
+                answer: "98",
+                hint: "Con số (2 chữ số): Tỷ lệ phần trăm hành lý thất lạc cuối cùng được trả lại cho chủ.",
+                explain: "Câu cuối của Part 2: 'only half of 1% of checked bags are lost, and of those, 98% are eventually returned to their owners'."
+            }
+        ];
+
+        // ==========================================
+        // 4. DỮ LIỆU BÀI TẬP 2: TRẮC NGHIỆM 3 LỰA CHỌN (MCQ)
+        // ==========================================
+        const mcqQuestions = [
+            {
+                id: "m1", part: "Part 1",
+                question: "1. What happens to most bags that fail to arrive with a passenger on their flight?",
+                options: [
+                    "A. They are permanently lost and never found again.",
+                    "B. They arrive on the next flight and are delivered within a few hours.",
+                    "C. They are immediately sent back to the passenger's home country."
+                ],
+                correct: 1,
+                hint: "Nghe đoạn nói về sự lạc quan ('You're optimistic') sau khi nộp đơn khiếu nại ở quầy hành lý.",
+                explain: "Đáp án đúng là B. Bài nghe nói: 'The majority of bags that don’t arrive with you will usually arrive on the next flight and will be delivered to your local address within a few hours'."
+            },
+            {
+                id: "m2", part: "Part 1",
+                question: "2. What is essential if you want to receive compensation for a permanently lost bag?",
+                options: [
+                    "A. You must prove and document the items you lost (e.g., with receipts).",
+                    "B. You must buy a new suitcase at the airport immediately.",
+                    "C. You must have travel insurance from a private bank."
+                ],
+                correct: 0,
+                hint: "Chú ý câu: 'one thing is certain: you won't receive anything if you are unable to...'",
+                explain: "Đáp án đúng là A. Bạn sẽ không nhận được gì nếu không thể chứng minh/liệt kê những gì đã mất ('document what you lost'), ví dụ như xuất trình hóa đơn mua hàng."
+            },
+            {
+                id: "m3", part: "Part 1",
+                question: "3. According to Tina, what are the two main causes of lost or delayed baggage?",
+                options: [
+                    "A. Bad weather and overbooked flights.",
+                    "B. Checking in late and having tight flight connections.",
+                    "C. Forgetting to lock suitcases and using dark-colored bags."
+                ],
+                correct: 1,
+                hint: "Nghe phần các mẹo phòng tránh ('tips to prevent the loss'), cụm từ 'These two situations are the cause...'",
+                explain: "Đáp án đúng là B. Tina nói rõ: 'Avoid checking in to your flight late and avoid tight connections where your bag has to be transferred. These two situations are the cause of most lost or delayed bags.'"
+            },
+            {
+                id: "m4", part: "Part 2",
+                question: "4. Where is the Unclaimed Baggage Center located?",
+                options: [
+                    "A. In the state of Alabama in the U.S. South.",
+                    "B. At a major international airport in New York.",
+                    "C. Near a central railway station in California."
+                ],
+                correct: 0,
+                hint: "Nghe phần giới thiệu địa điểm du lịch nổi tiếng thu hút hơn 1 triệu du khách mỗi năm.",
+                explain: "Đáp án đúng là A. Bài nghe giới thiệu: 'today, we’re at the Unclaimed Baggage Center, a one-of-a-kind store in the U.S., and a major tourist attraction here in the state of Alabama in the U.S. South.'"
+            },
+            {
+                id: "m5", part: "Part 2",
+                question: "5. What does the Unclaimed Baggage Center do with items that they cannot sell?",
+                options: [
+                    "A. They return them to the airlines for a refund.",
+                    "B. They throw them away in landfills.",
+                    "C. They donate or recycle them."
+                ],
+                correct: 2,
+                hint: "Nghe câu cuối cùng của đoạn mô tả quá trình phân loại và làm sạch hàng hóa.",
+                explain: "Đáp án đúng là C. Trong bài: 'What they can’t sell they donate or recycle' (Những gì không thể bán được, họ đem quyên góp hoặc tái chế)."
+            },
+            {
+                id: "m6", part: "Part 2",
+                question: "6. Why were the items at the Center NOT returned to their original owners?",
+                options: [
+                    "A. The owners refused to pay the shipping fees.",
+                    "B. Airlines had already paid claims to customers, or the bags lacked identification.",
+                    "C. The law prohibits returning bags after 7 days."
+                ],
+                correct: 1,
+                hint: "Nghe đoạn giải thích của chủ cửa hàng ('The owner of the Unclaimed Baggage Center says...').",
+                explain: "Đáp án đúng là B. Các hãng vận chuyển đã bồi thường xong cho khách hàng ('settled and paid claims'), hoặc do hành lý không có thông tin nhận dạng bên trên ('had no identification on them')."
+            }
+        ];
+
+        // ==========================================
+        // 5. DỮ LIỆU BÀI TẬP 3: NỐI TỪ (MATCHING)
+        // ==========================================
+        const matchQuestions = [
+            {
+                id: "mt1",
+                term: "1. Baggage carousel",
+                correctKey: "C",
+                hint: "Nơi hành khách đứng đợi hành lý chạy vòng tròn sau khi hạ cánh.",
+                explain: "Baggage carousel là băng chuyền xoay vòng tại sân bay để trả hành lý ký gửi cho hành khách."
+            },
+            {
+                id: "mt2",
+                term: "2. Reimburse",
+                correctKey: "E",
+                hint: "Hành động hãng hàng không trả lại tiền cho bạn khi bạn phải mua đồ dùng thiết yếu do hành lý đến trễ.",
+                explain: "Reimburse nghĩa là hoàn trả lại số tiền mà ai đó đã chi tiêu."
+            },
+            {
+                id: "mt3",
+                term: "3. Tight connection",
+                correctKey: "A",
+                hint: "Liên quan đến việc đổi máy bay (chuyến bay nối chuyến) với quỹ thời gian rất gấp.",
+                explain: "Tight connection là thời gian quá cảnh giữa hai chuyến bay quá ngắn, dễ khiến hành lý không kịp chuyển sang máy bay mới."
+            },
+            {
+                id: "mt4",
+                term: "4. Sight unseen",
+                correctKey: "B",
+                hint: "Cách thức công ty Unclaimed Baggage Center mua lại các kiện hành lý.",
+                explain: "Sight unseen nghĩa là mua một thứ gì đó mà không được kiểm tra hay nhìn thấy bên trong trước."
+            },
+            {
+                id: "mt5",
+                term: "5. Itemized list",
+                correctKey: "D",
+                hint: "Bản ghi chép chi tiết từng món đồ bạn đóng gói trong vali.",
+                explain: "Itemized list là danh sách liệt kê chi tiết từng hạng mục/món đồ cụ thể."
+            }
+        ];
+
+        const matchOptions = [
+            { key: "A", text: "A very short time between two connecting flights to transfer luggage." },
+            { key: "B", text: "Buying something without inspecting or seeing what is inside beforehand." },
+            { key: "C", text: "A rotating conveyor belt at an airport where passengers collect their bags." },
+            { key: "D", text: "A detailed record listing every single object packed inside a suitcase." },
+            { key: "E", text: "To pay back money to someone who has spent it due to an unexpected delay." }
+        ];
+
+        // ==========================================
+        // 6. LOGIC TRÌNH PHÁT AUDIO (WEB SPEECH API)
+        // ==========================================
+        let currentPlayingPart = null;
+        let isPaused = false;
+        let currentUtterance = null;
+
+        function getBestEnglishVoice() {
+            const voices = window.speechSynthesis.getVoices();
+            // Ưu tiên giọng nữ tiếng Anh Mỹ (Tina Traveler)
+            return voices.find(v => v.lang.includes('en-US') && (v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira')))
+                || voices.find(v => v.lang.includes('en-US'))
+                || voices.find(v => v.lang.includes('en'));
+        }
+
+        function updatePlayerUI(part, state) {
+            const btn = document.getElementById(`btn-play-${part}`);
+            const wave = document.getElementById(`wave-${part}`);
+            if (state === 'playing') {
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>Tạm dừng</span>`;
+                wave.classList.remove('paused');
+            } else if (state === 'paused') {
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>Tiếp tục</span>`;
+                wave.classList.add('paused');
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>Nghe Part ${part}</span>`;
+                wave.classList.add('paused');
+            }
+        }
+
+        function toggleAudio(part) {
+            if (!('speechSynthesis' in window)) {
+                showToast("Trình duyệt của bạn không hỗ trợ đọc giọng nói tự động.", "error");
+                return;
+            }
+
+            // Nếu đang phát chính part này
+            if (currentPlayingPart === part) {
+                if (window.speechSynthesis.speaking && !isPaused) {
+                    window.speechSynthesis.pause();
+                    isPaused = true;
+                    updatePlayerUI(part, 'paused');
+                    return;
+                } else if (isPaused) {
+                    window.speechSynthesis.resume();
+                    isPaused = false;
+                    updatePlayerUI(part, 'playing');
+                    return;
+                }
+            }
+
+            // Nếu đang phát part khác -> dừng hẳn trước
+            window.speechSynthesis.cancel();
+            if (currentPlayingPart) {
+                updatePlayerUI(currentPlayingPart, 'stopped');
+            }
+
+            // Bắt đầu phát mới
+            const utterance = new SpeechSynthesisUtterance(audioScripts[part]);
+            const voice = getBestEnglishVoice();
+            if (voice) utterance.voice = voice;
+            utterance.lang = 'en-US';
+            utterance.rate = parseFloat(document.getElementById(`rate-${part}`).value);
+            utterance.pitch = 1.05;
+
+            utterance.onstart = () => {
+                currentPlayingPart = part;
+                isPaused = false;
+                updatePlayerUI(part, 'playing');
+            };
+
+            utterance.onend = () => {
+                updatePlayerUI(part, 'stopped');
+                currentPlayingPart = null;
+                isPaused = false;
+            };
+
+            utterance.onerror = () => {
+                updatePlayerUI(part, 'stopped');
+                currentPlayingPart = null;
+                isPaused = false;
+            };
+
+            currentUtterance = utterance;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopAudio(part) {
+            if (currentPlayingPart === part || window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                updatePlayerUI(1, 'stopped');
+                updatePlayerUI(2, 'stopped');
+                currentPlayingPart = null;
+                isPaused = false;
+            }
+        }
+
+        function changeRate(part) {
+            if (currentPlayingPart === part) {
+                stopAudio(part);
+                toggleAudio(part);
+            }
+        }
+
+        function speakWord(word) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            if (currentPlayingPart) {
+                updatePlayerUI(currentPlayingPart, 'stopped');
+                currentPlayingPart = null;
+            }
+            const u = new SpeechSynthesisUtterance(word);
+            const voice = getBestEnglishVoice();
+            if (voice) u.voice = voice;
+            u.lang = 'en-US';
+            u.rate = 0.9;
+            window.speechSynthesis.speak(u);
+        }
+
+        // Load voices asynchronously
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = getBestEnglishVoice;
+        }
+
+        // ==========================================
+        // 7. RENDER GIAO DIỆN & TƯƠNG TÁC
+        // ==========================================
+        function showToast(msg, type = 'success') {
+            const box = document.getElementById('toast-box');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-msg');
+
+            text.textContent = msg;
+            icon.className = type === 'error'
+                ? 'fa-solid fa-circle-exclamation text-rose-400 text-lg'
+                : 'fa-solid fa-circle-check text-emerald-400 text-lg';
+
+            box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 3500);
+        }
+
+        function switchTab(tabName) {
+            const tabs = ['vocab', 'fill', 'mcq', 'match'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    btn.className = "tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow-sm";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "tab-btn flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100";
+                }
+            });
+        }
+
+        function renderVocab() {
+            [1, 2].forEach(part => {
+                const container = document.getElementById(`vocab-list-${part}`);
+                container.innerHTML = vocabData[part].map(item => `
+                    <div class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-100 transition flex items-start justify-between gap-3">
+                        <div>
+                            <div class="flex flex-wrap items-baseline gap-2">
+                                <span class="font-bold text-slate-800">${item.word}</span>
+                                <span class="text-xs font-medium text-blue-600">${item.pos}</span>
+                                <span class="text-xs text-slate-400 font-mono">${item.ipa}</span>
+                            </div>
+                            <p class="text-sm text-slate-600 mt-1">${item.mean}</p>
+                        </div>
+                        <button onclick="speakWord('${item.word}')" class="text-slate-400 hover:text-blue-600 p-2 rounded-lg hover:bg-white transition shrink-0" title="Nghe phát âm">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function renderFill() {
+            // Render word bank (shuffled)
+            const words = [...fillQuestions.map(q => q.answer)].sort(() => Math.random() - 0.5);
+            document.getElementById('word-bank').innerHTML = words.map(w => `
+                <span class="bg-white border border-slate-300 text-slate-700 text-xs font-semibold px-3 py-1 rounded-lg shadow-xs">${w}</span>
+            `).join('');
+
+            // Render questions
+            const container = document.getElementById('fill-questions-container');
+            container.innerHTML = fillQuestions.map((q, idx) => `
+                <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-md ${q.part === 'Part 1' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'}">Câu ${idx + 1} • ${q.part}</span>
+                        <button onclick="toggleHint('hint-${q.id}')" class="text-xs font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
+                            <i class="fa-regular fa-lightbulb"></i> Gợi ý
+                        </button>
+                    </div>
+                    <p class="text-sm sm:text-base text-slate-800 leading-relaxed">
+                        ${q.before}
+                        <input type="text" id="input-${q.id}" autocomplete="off" placeholder="..." class="mx-1 px-3 py-1 w-36 sm:w-44 text-center font-semibold text-blue-700 bg-white border-b-2 border-slate-400 focus:border-blue-600 focus:outline-none rounded-t-md transition">
+                        ${q.after}
+                    </p>
+                    <div id="hint-${q.id}" class="hidden text-xs text-amber-800 bg-amber-50/90 p-2.5 rounded-lg border border-amber-200/70">
+                        <i class="fa-solid fa-circle-info mr-1"></i> ${q.hint}
+                    </div>
+                    <div id="exp-${q.id}" class="hidden text-xs p-3 rounded-lg"></div>
+                </div>
+            `).join('');
+        }
+
+        function toggleHint(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        function checkFillAnswers() {
+            let score = 0;
+            fillQuestions.forEach(q => {
+                const input = document.getElementById(`input-${q.id}`);
+                const exp = document.getElementById(`exp-${q.id}`);
+                const userVal = input.value.trim().toLowerCase();
+                const isCorrect = userVal === q.answer.toLowerCase();
+
+                exp.classList.remove('hidden');
+                if (isCorrect) {
+                    score++;
+                    input.classList.remove('border-slate-400', 'border-rose-500', 'text-rose-700');
+                    input.classList.add('border-emerald-500', 'text-emerald-700', 'bg-emerald-50');
+                    exp.className = "text-xs p-3 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200";
+                    exp.innerHTML = `<p class="font-bold text-emerald-700 mb-1"><i class="fa-solid fa-check-circle mr-1"></i> Chính xác! (${q.answer})</p><p>${q.explain}</p>`;
+                } else {
+                    input.classList.remove('border-slate-400', 'border-emerald-500', 'text-emerald-700');
+                    input.classList.add('border-rose-500', 'text-rose-700', 'bg-rose-50');
+                    exp.className = "text-xs p-3 rounded-lg bg-rose-50 text-rose-900 border border-rose-200";
+                    exp.innerHTML = `<p class="font-bold text-rose-700 mb-1"><i class="fa-solid fa-xmark-circle mr-1"></i> Chưa chính xác. Đáp án đúng là: <span class="underline">${q.answer}</span></p><p>${q.explain}</p>`;
+                }
+            });
+
+            const badge = document.getElementById('fill-score-badge');
+            badge.textContent = `Điểm: ${score}/${fillQuestions.length}`;
+            badge.classList.remove('hidden');
+            showToast(`Bạn đã trả lời đúng ${score}/${fillQuestions.length} câu điền từ!`);
+        }
+
+        function resetFill() {
+            document.getElementById('fill-score-badge').classList.add('hidden');
+            renderFill();
+        }
+
+        function renderMcq() {
+            const container = document.getElementById('mcq-questions-container');
+            container.innerHTML = mcqQuestions.map(q => `
+                <div class="p-5 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-md ${q.part === 'Part 1' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'}">${q.part}</span>
+                        <button onclick="toggleHint('hint-${q.id}')" class="text-xs font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
+                            <i class="fa-regular fa-lightbulb"></i> Gợi ý
+                        </button>
+                    </div>
+                    <p class="font-semibold text-slate-800 text-sm sm:text-base">${q.question}</p>
+                    <div class="space-y-2">
+                        ${q.options.map((opt, oIdx) => `
+                            <label id="lbl-${q.id}-${oIdx}" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 cursor-pointer transition">
+                                <input type="radio" name="${q.id}" value="${oIdx}" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm text-slate-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div id="hint-${q.id}" class="hidden text-xs text-amber-800 bg-amber-50/90 p-2.5 rounded-lg border border-amber-200/70">
+                        <i class="fa-solid fa-circle-info mr-1"></i> ${q.hint}
+                    </div>
+                    <div id="exp-${q.id}" class="hidden text-xs p-3 rounded-lg"></div>
+                </div>
+            `).join('');
+        }
+
+        function checkMcqAnswers() {
+            let score = 0;
+            mcqQuestions.forEach(q => {
+                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                const exp = document.getElementById(`exp-${q.id}`);
+                exp.classList.remove('hidden');
+
+                // Reset option styles
+                q.options.forEach((_, idx) => {
+                    const lbl = document.getElementById(`lbl-${q.id}-${idx}`);
+                    lbl.classList.remove('border-emerald-500', 'bg-emerald-50', 'border-rose-500', 'bg-rose-50');
+                });
+
+                const correctLbl = document.getElementById(`lbl-${q.id}-${q.correct}`);
+                correctLbl.classList.add('border-emerald-500', 'bg-emerald-50');
+
+                if (selected && parseInt(selected.value) === q.correct) {
+                    score++;
+                    exp.className = "text-xs p-3 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200";
+                    exp.innerHTML = `<p class="font-bold text-emerald-700 mb-1"><i class="fa-solid fa-check-circle mr-1"></i> Chính xác!</p><p>${q.explain}</p>`;
+                } else {
+                    if (selected) {
+                        const wrongLbl = document.getElementById(`lbl-${q.id}-${selected.value}`);
+                        wrongLbl.classList.add('border-rose-500', 'bg-rose-50');
+                    }
+                    exp.className = "text-xs p-3 rounded-lg bg-rose-50 text-rose-900 border border-rose-200";
+                    exp.innerHTML = `<p class="font-bold text-rose-700 mb-1"><i class="fa-solid fa-xmark-circle mr-1"></i> Chưa đúng.</p><p>${q.explain}</p>`;
+                }
+            });
+
+            const badge = document.getElementById('mcq-score-badge');
+            badge.textContent = `Điểm: ${score}/${mcqQuestions.length}`;
+            badge.classList.remove('hidden');
+            showToast(`Bạn đạt ${score}/${mcqQuestions.length} câu trắc nghiệm!`);
+        }
+
+        function resetMcq() {
+            document.getElementById('mcq-score-badge').classList.add('hidden');
+            renderMcq();
+        }
+
+        function renderMatch() {
+            const container = document.getElementById('match-questions-container');
+            container.innerHTML = `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4 space-y-1.5">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Danh sách định nghĩa (A - E):</p>
+                    ${matchOptions.map(o => `
+                        <p class="text-xs sm:text-sm text-slate-700"><span class="font-bold text-emerald-700">${o.key}.</span> ${o.text}</p>
+                    `).join('')}
+                </div>
+                <div class="space-y-3">
+                    ${matchQuestions.map(q => `
+                        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-800 text-sm sm:text-base">${q.term}</span>
+                                    <button onclick="toggleHint('hint-${q.id}')" class="text-xs text-amber-600 hover:underline bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Gợi ý</button>
+                                </div>
+                                <select id="sel-${q.id}" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:border-emerald-500 sm:w-64">
+                                    <option value="">-- Chọn đáp án (A - E) --</option>
+                                    ${matchOptions.map(o => `<option value="${o.key}">${o.key}. ${o.text.substring(0, 38)}...</option>`).join('')}
+                                </select>
+                            </div>
+                            <div id="hint-${q.id}" class="hidden text-xs text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                                <i class="fa-solid fa-circle-info mr-1"></i> ${q.hint}
+                            </div>
+                            <div id="exp-${q.id}" class="hidden text-xs p-2.5 rounded-lg"></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function checkMatchAnswers() {
+            let score = 0;
+            matchQuestions.forEach(q => {
+                const sel = document.getElementById(`sel-${q.id}`);
+                const exp = document.getElementById(`exp-${q.id}`);
+                exp.classList.remove('hidden');
+
+                if (sel.value === q.correctKey) {
+                    score++;
+                    sel.classList.remove('border-slate-300', 'border-rose-500');
+                    sel.classList.add('border-emerald-500', 'bg-emerald-50');
+                    exp.className = "text-xs p-2.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200";
+                    exp.innerHTML = `<span class="font-bold text-emerald-700"><i class="fa-solid fa-check-circle mr-1"></i> Chính xác (${q.correctKey})!</span> ${q.explain}`;
+                } else {
+                    sel.classList.remove('border-slate-300', 'border-emerald-500');
+                    sel.classList.add('border-rose-500', 'bg-rose-50');
+                    exp.className = "text-xs p-2.5 rounded-lg bg-rose-50 text-rose-900 border border-rose-200";
+                    exp.innerHTML = `<span class="font-bold text-rose-700"><i class="fa-solid fa-xmark-circle mr-1"></i> Sai rồi (Đáp án đúng: ${q.correctKey}).</span> ${q.explain}`;
+                }
+            });
+
+            const badge = document.getElementById('match-score-badge');
+            badge.textContent = `Điểm: ${score}/${matchQuestions.length}`;
+            badge.classList.remove('hidden');
+            showToast(`Bạn nối đúng ${score}/${matchQuestions.length} cặp từ!`);
+        }
+
+        function resetMatch() {
+            document.getElementById('match-score-badge').classList.add('hidden');
+            renderMatch();
+        }
+
+        // Khởi tạo ứng dụng khi tải trang
+        window.onload = function() {
+            renderVocab();
+            renderFill();
+            renderMcq();
+            renderMatch();
+        };
+    </script>
+</body>
+</html>
